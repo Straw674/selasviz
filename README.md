@@ -6,8 +6,6 @@ This project is managed with [uv](https://docs.astral.sh/uv/).
 
 ## Installation
 
-Choose one workflow based on how you want to use `selas`.
-
 ### 1) Add to a project
 
 With uv:
@@ -101,10 +99,6 @@ uv run semantic-release version
 ```
 
 The GitHub workflow also runs this automatically on pushes to `main`.
-
-Generated changelog:
-
-- [CHANGELOG.md](./CHANGELOG.md)
 
 ## License
 
