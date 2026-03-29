@@ -6,22 +6,14 @@ This project is managed with [uv](https://docs.astral.sh/uv/).
 
 ## Installation
 
-With uv (recommended):
+Choose one workflow based on how you want to use `selas`.
+
+### 1) Add to a project
+
+With uv:
 
 ```bash
 uv add selas
-```
-
-For CLI usage without adding to a project:
-
-```bash
-uvx --from selas explore --help
-```
-
-For a globally installed CLI:
-
-```bash
-uv tool install selas
 ```
 
 With pip:
@@ -30,7 +22,29 @@ With pip:
 pip install selas
 ```
 
-After installation, the CLI entry is available as `explore`.
+After installing into your environment, the CLI entry `explore` is also available.
+
+### 2) Use as a tool (CLI only)
+
+Use this when you only need the CLI and do not want to add `selas` as a project dependency.
+
+Run directly with uvx (no persistent install):
+
+```bash
+uvx --from selas explore --help
+```
+
+Install as a global tool with uv:
+
+```bash
+uv tool install selas
+```
+
+Then run:
+
+```bash
+explore --help
+```
 
 ## Quick Start
 
@@ -69,14 +83,6 @@ cd selas
 uv sync --extra dev
 ```
 
-Useful commands:
-
-```bash
-uv run explore --help
-uv run pytest
-uv build
-```
-
 ## Release Versioning
 
 This repository uses Semantic Versioning with
@@ -95,6 +101,10 @@ uv run semantic-release version
 ```
 
 The GitHub workflow also runs this automatically on pushes to `main`.
+
+Generated changelog:
+
+- [CHANGELOG.md](./CHANGELOG.md)
 
 ## License
 
