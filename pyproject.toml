@@ -1,6 +1,6 @@
 [project]
 name = "selas"
-version = "0.0.0"
+version = "0.1.0"
 description = "Interactive 2D visualization workbench for Pandas DataFrames"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -55,3 +55,11 @@ commit_parser = "conventional"
 allow_zero_version = true
 version_toml = ["pyproject.toml:project.version"]
 changelog_file = "CHANGELOG.md"
+
+[tool.uv]
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true
