@@ -81,6 +81,12 @@ cd selasviz
 uv sync --extra dev
 ```
 
+Run the standalone demo script from a source checkout:
+
+```bash
+uv run python scripts/demo_explorer.py --rows 50000 --title "Demo Explorer"
+```
+
 ## Release Versioning
 
 This repository uses Semantic Versioning with

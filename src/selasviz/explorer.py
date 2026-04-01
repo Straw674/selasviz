@@ -8,7 +8,6 @@ from __future__ import annotations
 from typing import Any
 
 import holoviews as hv
-import numpy as np
 import pandas as pd
 import panel as pn
 
@@ -215,19 +214,3 @@ def launch_explorer(
         dashboard.show(port=port, title=title)
 
     return dashboard
-
-
-if __name__ == "__main__":
-    rng = np.random.default_rng(27)
-    n = 50000
-    demo_df = pd.DataFrame(
-        {
-            "ra": rng.uniform(200, 220, n),
-            "dec": rng.uniform(40, 50, n),
-            "redshift": rng.uniform(0.05, 0.8, n),
-            "mass": 10 ** rng.uniform(13, 15, n),
-            "richness": rng.integers(10, 200, n),
-            "name": [f"CLJ{i:05d}" for i in range(n)],
-        }
-    )
-    launch_explorer(demo_df, title="Demo Explorer")
