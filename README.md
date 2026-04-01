@@ -26,13 +26,13 @@ After installing into your environment, the CLI entry `selasviz` is also availab
 
 Use this when you only need the CLI and do not want to add `selasviz` as a project dependency.
 
-Run directly with uvx (no persistent install):
+Run directly with uvx (temporary installation):
 
 ```bash
 uvx --from selasviz selasviz --help
 ```
 
-Install as a global tool with uv:
+Or install as a global tool with uv:
 
 ```bash
 uv tool install selasviz
@@ -59,7 +59,7 @@ launch_explorer(df, port=5006, show=True)
 
 ## CLI (FITS)
 
-The CLI currently supports FITS files only for now.
+The CLI currently only supports FITS table files.
 
 Launch directly from a FITS table file:
 
