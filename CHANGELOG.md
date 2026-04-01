@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v0.1.3 (2026-04-01)
+
+### Bug Fixes
+
+- **release**: Switch package name to selas and enable PyPI OIDC publish
+  ([`df4c6a0`](https://github.com/Straw674/selas/commit/df4c6a01f3bafd5379c67207633355b7aa684979))
+
+### Chores
+
+- Update README.md
+  ([`af7aa17`](https://github.com/Straw674/selas/commit/af7aa17cf8878b2e00fd5820205431455f67133e))
+
+
 ## v0.1.2 (2026-03-29)
 
 ### Bug Fixes
