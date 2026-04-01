@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v0.1.9 (2026-04-01)
+
+### Bug Fixes
+
+- Show plotted points alongside total points
+  ([`5691219`](https://github.com/Straw674/selasviz/commit/569121959cf4d9d17b8c8f7a366cc1aeeb82730e))
+
+### Chores
+
+- Move demo explorer script to scripts
+  ([`811f3ce`](https://github.com/Straw674/selasviz/commit/811f3cec469dbfadbaaba7dd65e4157abd990781))
+
+
 ## v0.1.8 (2026-04-01)
 
 ### Bug Fixes

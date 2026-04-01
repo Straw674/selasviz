@@ -1,6 +1,6 @@
 [project]
 name = "selasviz"
-version = "0.1.8"
+version = "0.1.9"
 description = "Interactive 2D visualization workbench for Pandas DataFrames"
 readme = "README.md"
 requires-python = ">=3.10"
