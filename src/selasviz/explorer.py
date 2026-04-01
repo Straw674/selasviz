@@ -83,6 +83,9 @@ def launch_explorer(
 
     widgets = create_widgets(axis_cols, color_cols, n_rows, _CMAP_OPTIONS)
     controls = create_controls(widgets, n_rows)
+    plotted_points_pane = pn.pane.Markdown(
+        f"### Plotted/Total Points: **{n_rows:,}/{n_rows:,}**"
+    )
     bind_visibility_callbacks(
         widgets,
         controls,
@@ -160,6 +163,10 @@ def launch_explorer(
                 sample_size=sample_size,
             )
 
+        plotted_points_pane.object = (
+            f"## Plotted/Total Points: **{len(plot_df)}/{n_rows}**"
+        )
+
         if plot_type == "Datashader":
             return render_datashader(
                 plot_df,
@@ -207,7 +214,7 @@ def launch_explorer(
             cmap_options=_CMAP_OPTIONS,
         )
 
-    sidebar = create_sidebar(widgets, controls, n_rows)
+    sidebar = create_sidebar(widgets, controls, n_rows, plotted_points_pane)
     dashboard = create_dashboard(title, sidebar, _make_plot)
 
     if show:

@@ -280,7 +280,12 @@ def bind_visibility_callbacks(
     _toggle_color_mode(widgets["color_mode"].value)
 
 
-def create_sidebar(widgets: WidgetMap, controls: ControlMap, n_rows: int) -> pn.Column:
+def create_sidebar(
+    widgets: WidgetMap,
+    controls: ControlMap,
+    n_rows: int,
+    plotted_points_pane: Any | None = None,
+) -> pn.Column:
     """Create dashboard sidebar.
 
     Parameters
@@ -291,6 +296,8 @@ def create_sidebar(widgets: WidgetMap, controls: ControlMap, n_rows: int) -> pn.
         Control group mapping.
     n_rows : int
         Row count of plotting dataframe.
+    plotted_points_pane : Any | None
+        Reactive or static panel showing currently rendered point count.
 
     Returns
     -------
@@ -298,7 +305,9 @@ def create_sidebar(widgets: WidgetMap, controls: ControlMap, n_rows: int) -> pn.
         Sidebar container.
     """
     return pn.Column(
-        pn.pane.Markdown(f"### Total Points: **{n_rows:,}**"),
+        plotted_points_pane
+        if plotted_points_pane is not None
+        else pn.pane.Markdown(f"## Plotted/Total Points: **{n_rows}/{n_rows}**"),
         pn.layout.Divider(),
         pn.pane.Markdown("## Axis Selection"),
         widgets["x"],
