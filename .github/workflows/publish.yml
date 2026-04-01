@@ -12,7 +12,6 @@ permissions:
 
 jobs:
   pypi:
-    if: false
     runs-on: ubuntu-latest
 
     steps:

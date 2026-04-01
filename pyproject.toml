@@ -1,5 +1,5 @@
 [project]
-name = "selas-testpypi"
+name = "selas"
 version = "0.1.2"
 description = "Interactive 2D visualization workbench for Pandas DataFrames"
 readme = "README.md"
@@ -58,6 +58,7 @@ commit_parser = "conventional"
 allow_zero_version = true
 version_toml = ["pyproject.toml:project.version"]
 changelog_file = "CHANGELOG.md"
+upload_to_vcs_release = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -70,11 +71,3 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
-
-[tool.uv]
-
-[[tool.uv.index]]
-name = "testpypi"
-url = "https://test.pypi.org/simple/"
-publish-url = "https://test.pypi.org/legacy/"
-explicit = true
