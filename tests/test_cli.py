@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
+from astropy.table import Table
 
 from selasviz import cli
 
@@ -65,3 +67,49 @@ def test_main_success_reads_and_launches(
     assert called_title == "T"
     assert called_port == 6006
     assert called_show is True
+
+
+def test_read_fits_as_dataframe_keeps_multidimensional_columns(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    table = Table()
+    table["x"] = [1.0, 2.0]
+    table["vec"] = np.array([[1, 2, 3], [4, 5, 6]])
+
+    class _FakeTable:
+        @staticmethod
+        def read(path: Path, format: str):
+            assert path == Path("mock.fits")
+            assert format == "fits"
+            return table
+
+    monkeypatch.setattr(cli, "Table", _FakeTable)
+
+    df = cli._read_fits_as_dataframe(Path("mock.fits"))
+
+    assert df["x"].tolist() == [1.0, 2.0]
+    assert isinstance(df.loc[0, "vec"], np.ndarray)
+    assert np.array_equal(df.loc[0, "vec"], np.array([1, 2, 3]))
+    assert np.array_equal(df.loc[1, "vec"], np.array([4, 5, 6]))
+
+
+def test_read_fits_as_dataframe_allows_tables_with_only_multidimensional_columns(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    table = Table()
+    table["vec"] = np.array([[10, 11], [12, 13]])
+
+    class _FakeTable:
+        @staticmethod
+        def read(path: Path, format: str):
+            assert path == Path("mock_nd_only.fits")
+            assert format == "fits"
+            return table
+
+    monkeypatch.setattr(cli, "Table", _FakeTable)
+
+    df = cli._read_fits_as_dataframe(Path("mock_nd_only.fits"))
+
+    assert list(df.columns) == ["vec"]
+    assert np.array_equal(df.loc[0, "vec"], np.array([10, 11]))
+    assert np.array_equal(df.loc[1, "vec"], np.array([12, 13]))

@@ -6,6 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 
+import pandas as pd
 from astropy.table import Table
 
 from .explorer import launch_explorer
@@ -14,7 +15,22 @@ from .explorer import launch_explorer
 def _read_fits_as_dataframe(path: Path):
     """Read a FITS table into a pandas DataFrame."""
     table = Table.read(path, format="fits")
-    return table.to_pandas()
+
+    # Split columns into scalar/1D and multidimensional groups.
+    cols_1d = [name for name in table.colnames if len(table[name].shape) <= 1]
+    cols_nd = [name for name in table.colnames if len(table[name].shape) > 1]
+
+    # Use astropy's conversion for 1D columns; it preserves dtype/mask behavior.
+    if cols_1d:
+        df = table[cols_1d].to_pandas()
+    else:
+        df = pd.DataFrame(index=range(len(table)))
+
+    # Store multidimensional cells as per-row array objects.
+    for name in cols_nd:
+        df[name] = list(table[name])
+
+    return df
 
 
 def _build_parser() -> argparse.ArgumentParser:
