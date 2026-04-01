@@ -1,6 +1,6 @@
 [project]
 name = "selas"
-version = "0.1.3"
+version = "0.1.4"
 description = "Interactive 2D visualization workbench for Pandas DataFrames"
 readme = "README.md"
 requires-python = ">=3.10"
