@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from selas.scatter_renderer import (
+from selasviz.scatter_renderer import (
     _normalize_category_value,
     get_discrete_colormap,
     is_categorical_column,

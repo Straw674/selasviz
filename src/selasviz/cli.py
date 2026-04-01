@@ -1,4 +1,4 @@
-"""Command-line entry for launching selas from a FITS table."""
+"""Command-line entry for launching selasviz from a FITS table."""
 
 from __future__ import annotations
 
@@ -19,11 +19,11 @@ def _read_fits_as_dataframe(path: Path):
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="selas",
-        description="Launch selas with a FITS table file.",
+        prog="selasviz",
+        description="Launch selasviz with a FITS table file.",
     )
     parser.add_argument("fits_file", type=Path, help="Path to FITS table file")
-    parser.add_argument("--title", default="Selas Explorer", help="Dashboard title")
+    parser.add_argument("--title", default="Selasviz Explorer", help="Dashboard title")
     parser.add_argument(
         "--port",
         type=int,

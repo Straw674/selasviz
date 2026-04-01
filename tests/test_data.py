@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from selas.data import (
+from selasviz.data import (
     filter_outliers,
     sample_large_data,
     select_color_candidate_columns,

@@ -1,4 +1,4 @@
-"""Public API for the selas package."""
+"""Public API for the selasviz package."""
 
 from __future__ import annotations
 

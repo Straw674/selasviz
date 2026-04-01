@@ -1,4 +1,4 @@
-# selas
+# selasviz
 
 An interactive 2D visualization workbench for Pandas DataFrames, built with [Panel](https://panel.holoviz.org/) and [HoloViews](https://holoviews.org/). It supports scatter, hexbin, and datashader views.
 
@@ -11,44 +11,44 @@ This project is managed with [uv](https://docs.astral.sh/uv/).
 With uv:
 
 ```bash
-uv add selas
+uv add selasviz
 ```
 
 With pip:
 
 ```bash
-pip install selas
+pip install selasviz
 ```
 
-After installing into your environment, the CLI entry `selas` is also available.
+After installing into your environment, the CLI entry `selasviz` is also available.
 
 ### 2) Use as a tool (CLI only)
 
-Use this when you only need the CLI and do not want to add `selas` as a project dependency.
+Use this when you only need the CLI and do not want to add `selasviz` as a project dependency.
 
 Run directly with uvx (no persistent install):
 
 ```bash
-uvx --from selas selas --help
+uvx --from selasviz selasviz --help
 ```
 
 Install as a global tool with uv:
 
 ```bash
-uv tool install selas
+uv tool install selasviz
 ```
 
 Then run:
 
 ```bash
-selas --help
+selasviz --help
 ```
 
 ## Quick Start
 
 ```python
 import pandas as pd
-from selas import launch_explorer
+from selasviz import launch_explorer
 
 # Load your data
 df = pd.read_csv("your_data.csv")
@@ -64,20 +64,20 @@ The CLI currently supports FITS files only for now.
 Launch directly from a FITS table file:
 
 ```bash
-selas data.fits
+selasviz data.fits
 ```
 
 Optional arguments:
 
 ```bash
-selas data.fits --title "Data Explorer" --port 5006
+selasviz data.fits --title "Data Explorer" --port 5006
 ```
 
 ## Development (uv)
 
 ```bash
-git clone https://github.com/Straw674/selas
-cd selas
+git clone https://github.com/Straw674/selasviz
+cd selasviz
 uv sync --extra dev
 ```
 

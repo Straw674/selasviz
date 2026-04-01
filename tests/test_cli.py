@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from selas import cli
+from selasviz import cli
 
 
 def test_main_missing_file_raises_system_exit() -> None:

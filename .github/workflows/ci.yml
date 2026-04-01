@@ -41,7 +41,7 @@ jobs:
         run: uv pip install dist/*.whl
 
       - name: Import smoke test
-        run: uv run python -c "import selas; print(selas.__all__)"
+        run: uv run python -c "import selasviz; print(selasviz.__all__)"
 
       - name: CLI smoke test
-        run: uv run selas --help
+        run: uv run selasviz --help
