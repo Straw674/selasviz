@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.1.12 (2026-04-12)
+
+### Bug Fixes
+
+- 1:1 axis ratio by default
+  ([`bd2cbae`](https://github.com/Straw674/selasviz/commit/bd2cbaef3b4cb843dd9d2f04eb490477eb994044))
+
+
 ## v0.1.11 (2026-04-12)
 
 
