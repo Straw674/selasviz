@@ -13,6 +13,77 @@ WidgetMap = dict[str, Any]
 ControlMap = dict[str, pn.Column]
 
 
+def _detect_display_resolution() -> tuple[int, int] | None:
+    """Best-effort detection of primary display resolution in pixels."""
+    try:
+        import tkinter as tk
+
+        root = tk.Tk()
+        root.withdraw()
+        width = int(root.winfo_screenwidth())
+        height = int(root.winfo_screenheight())
+        root.destroy()
+    except Exception:
+        return None
+
+    if width <= 0 or height <= 0:
+        return None
+    return width, height
+
+
+def _compute_auto_best_plot_size(display_w: int, display_h: int) -> int:
+    """Compute an auto default for a square plot body from display resolution."""
+    sidebar_and_padding_px = 520
+    chrome_and_padding_px = 260
+
+    usable_w = max(display_w - sidebar_and_padding_px, 300)
+    usable_h = max(display_h - chrome_and_padding_px, 300)
+
+    size = min(usable_w, usable_h)
+    size = int(np.clip(size, 300, 1800))
+
+    # Keep auto values aligned with slider step to avoid immediate snapping.
+    return int(round(size / 50.0) * 50)
+
+
+def _bind_plot_size_sync(widgets: WidgetMap) -> None:
+    """Keep plot width and height synchronized while the square lock is enabled."""
+    syncing = {"value": False}
+
+    def _sync_dimension(target_name: str, value: int) -> None:
+        if syncing["value"] or not widgets["plot_size_lock"].value:
+            return
+
+        target_widget = widgets[target_name]
+        if target_widget.value == value:
+            return
+
+        syncing["value"] = True
+        try:
+            target_widget.value = value
+        finally:
+            syncing["value"] = False
+
+    def _on_width_changed(event: Any) -> None:
+        _sync_dimension("height", event.new)
+
+    def _on_height_changed(event: Any) -> None:
+        _sync_dimension("width", event.new)
+
+    def _on_lock_changed(event: Any) -> None:
+        if event.new:
+            _sync_dimension("height", widgets["width"].value)
+
+    widgets["width"].param.watch(_on_width_changed, "value")
+    widgets["height"].param.watch(_on_height_changed, "value")
+    widgets["plot_size_lock"].param.watch(_on_lock_changed, "value")
+    widgets["_plot_size_sync_callbacks"] = (
+        _on_width_changed,
+        _on_height_changed,
+        _on_lock_changed,
+    )
+
+
 def create_widgets(
     axis_cols: list[str],
     color_cols: list[str],
@@ -39,8 +110,18 @@ def create_widgets(
     """
     default_plot_type = "Datashader" if n_rows >= 30000 else "Scatter"
     default_gridsize = int(np.clip(np.sqrt(n_rows) * 0.25, 10, 500))
+    detected_resolution = _detect_display_resolution()
+    if detected_resolution is None:
+        display_w, display_h = 1920, 1080
 
-    return {
+    else:
+        display_w, display_h = detected_resolution
+
+    auto_best_size = _compute_auto_best_plot_size(display_w, display_h)
+    display_text = f"Detected display: {display_w}x{display_h} \
+        Adaptive size: {auto_best_size}x{auto_best_size}"
+
+    widgets = {
         "x": pn.widgets.Select(name="X axis", options=axis_cols, value=axis_cols[0]),
         "y": pn.widgets.Select(
             name="Y axis",
@@ -150,13 +231,19 @@ def create_widgets(
         "ds_spread_px": pn.widgets.IntSlider(
             name="Spread max px", start=1, end=10, step=1, value=1
         ),
+        "plot_size_lock": pn.widgets.Checkbox(
+            name="Keep 1:1 plot body ratio", value=True
+        ),
         "width": pn.widgets.IntSlider(
-            name="Plot width", start=100, end=3000, step=50, value=1800
+            name="Plot width", start=100, end=3000, step=50, value=auto_best_size
         ),
         "height": pn.widgets.IntSlider(
-            name="Plot height", start=100, end=2000, step=50, value=1200
+            name="Plot height", start=100, end=2000, step=50, value=auto_best_size
         ),
+        "display_info": pn.pane.Markdown(display_text),
     }
+    _bind_plot_size_sync(widgets)
+    return widgets
 
 
 def create_controls(widgets: WidgetMap, n_rows: int) -> ControlMap:
@@ -295,6 +382,7 @@ def create_sidebar(
     controls: ControlMap,
     n_rows: int,
     plotted_points_pane: Any | None = None,
+    reference_line_controls: Any | None = None,
 ) -> pn.Column:
     """Create dashboard sidebar.
 
@@ -308,13 +396,15 @@ def create_sidebar(
         Row count of plotting dataframe.
     plotted_points_pane : Any | None
         Reactive or static panel showing currently rendered point count.
+    reference_line_controls : Any | None
+        Optional controls for managing user-defined reference lines.
 
     Returns
     -------
     pn.Column
         Sidebar container.
     """
-    return pn.Column(
+    sidebar_items: list[Any] = [
         plotted_points_pane
         if plotted_points_pane is not None
         else pn.pane.Markdown(f"## Plotted/Total Points: **{n_rows}/{n_rows}**"),
@@ -328,6 +418,8 @@ def create_sidebar(
         widgets["y_scale"],
         pn.layout.Divider(),
         pn.pane.Markdown("## Plot Size"),
+        widgets["display_info"],
+        widgets["plot_size_lock"],
         widgets["width"],
         widgets["height"],
         pn.layout.Divider(),
@@ -336,8 +428,18 @@ def create_sidebar(
         controls["scatter_controls"],
         controls["hexbin_controls"],
         controls["ds_controls"],
-        width=320,
-    )
+    ]
+
+    if reference_line_controls is not None:
+        sidebar_items.extend(
+            [
+                pn.layout.Divider(),
+                pn.pane.Markdown("## Reference Lines"),
+                reference_line_controls,
+            ]
+        )
+
+    return pn.Column(*sidebar_items, width=320)
 
 
 def create_dashboard(title: str, sidebar: pn.Column, plot_panel: Any) -> pn.Column:
@@ -357,7 +459,14 @@ def create_dashboard(title: str, sidebar: pn.Column, plot_panel: Any) -> pn.Colu
     pn.Column
         Full dashboard container.
     """
-    layout = pn.Row(sidebar, pn.Column(pn.panel(plot_panel, margin=(0, 0, 0, 20))))
+    layout = pn.Row(
+        sidebar,
+        pn.Column(
+            pn.panel(plot_panel, margin=(0, 0, 0, 20)),
+            sizing_mode="stretch_width",
+        ),
+        sizing_mode="stretch_width",
+    )
 
     header_html = (
         "<h1 style='margin-top: 5px; color: #3b82f6; font-family: sans-serif;'>"
