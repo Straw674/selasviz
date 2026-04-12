@@ -14,6 +14,7 @@ import panel as pn
 from .colormap import _CMAP_OPTIONS
 from .data import (
     filter_outliers,
+    prepare_plot_dataframe,
     sample_large_data,
     select_color_candidate_columns,
     select_scalar_numeric_columns,
@@ -98,6 +99,8 @@ def launch_explorer(
         widgets["x"],
         widgets["y"],
         widgets["clip_pct"],
+        widgets["x_scale"],
+        widgets["y_scale"],
         widgets["plot_type"],
         widgets["cmap_ds"],
         widgets["cmap_hex"],
@@ -127,6 +130,8 @@ def launch_explorer(
         x_col: str,
         y_col: str,
         clip_pct: float,
+        x_scale: str,
+        y_scale: str,
         plot_type: str,
         cmap_ds: str,
         cmap_hex: str,
@@ -152,7 +157,14 @@ def launch_explorer(
         enable_sampling: bool,
         sample_size: int,
     ) -> Any:
-        plot_df = filter_outliers(pdf, x_col, y_col, clip_pct)
+        plot_df, x_label, y_label = prepare_plot_dataframe(
+            pdf,
+            x_col,
+            y_col,
+            x_scale=x_scale,
+            y_scale=y_scale,
+        )
+        plot_df = filter_outliers(plot_df, x_col, y_col, clip_pct)
 
         if plot_type == "Scatter" and enable_sampling:
             plot_df = sample_large_data(
@@ -179,6 +191,8 @@ def launch_explorer(
                 plot_w,
                 plot_h,
                 _CMAP_OPTIONS,
+                x_label=x_label,
+                y_label=y_label,
             )
 
         if plot_type == "Hexbin":
@@ -194,6 +208,8 @@ def launch_explorer(
                 plot_w,
                 plot_h,
                 _CMAP_OPTIONS,
+                x_label=x_label,
+                y_label=y_label,
             )
 
         return render_scatter(
@@ -212,6 +228,8 @@ def launch_explorer(
             cmap_scatter=cmap_scatter,
             sc_cnorm=sc_cnorm,
             cmap_options=_CMAP_OPTIONS,
+            x_label=x_label,
+            y_label=y_label,
         )
 
     sidebar = create_sidebar(widgets, controls, n_rows, plotted_points_pane)

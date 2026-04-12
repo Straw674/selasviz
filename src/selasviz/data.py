@@ -168,6 +168,56 @@ def sample_large_data(
     return result.reset_index(drop=True)
 
 
+def prepare_plot_dataframe(
+    df: pd.DataFrame,
+    x_col: str,
+    y_col: str,
+    x_scale: str = "Linear",
+    y_scale: str = "Linear",
+) -> tuple[pd.DataFrame, str, str]:
+    """Prepare a plotting dataframe with optional log10 axis transforms.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Source dataframe.
+    x_col : str
+        X-axis column name.
+    y_col : str
+        Y-axis column name.
+    x_scale : str
+        X-axis scale selector value.
+    y_scale : str
+        Y-axis scale selector value.
+
+    Returns
+    -------
+    tuple[pd.DataFrame, str, str]
+        Plot dataframe plus display labels for X and Y axes.
+    """
+    x_log = x_scale == "Log10"
+    y_log = y_scale == "Log10"
+
+    if not x_log and not y_log:
+        return df, x_col, y_col
+
+    valid_mask = pd.Series(True, index=df.index)
+    if x_log:
+        valid_mask &= pd.notna(df[x_col]) & (df[x_col] > 0)
+    if y_log:
+        valid_mask &= pd.notna(df[y_col]) & (df[y_col] > 0)
+
+    plot_df = df[valid_mask].copy()
+    if x_log:
+        plot_df[x_col] = np.log10(plot_df[x_col].astype(float))
+    if y_log:
+        plot_df[y_col] = np.log10(plot_df[y_col].astype(float))
+
+    x_label = f"log10({x_col})" if x_log else x_col
+    y_label = f"log10({y_col})" if y_log else y_col
+    return plot_df, x_label, y_label
+
+
 def filter_outliers(
     df: pd.DataFrame,
     x_col: str,

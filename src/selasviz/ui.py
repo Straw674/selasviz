@@ -54,6 +54,16 @@ def create_widgets(
             step=0.01,
             value=0.01,
         ),
+        "x_scale": pn.widgets.Select(
+            name="X axis scale",
+            options=["Linear", "Log10"],
+            value="Linear",
+        ),
+        "y_scale": pn.widgets.Select(
+            name="Y axis scale",
+            options=["Linear", "Log10"],
+            value="Linear",
+        ),
         "plot_type": pn.widgets.Select(
             name="Plot Type",
             options=["Datashader", "Hexbin", "Scatter"],
@@ -313,6 +323,9 @@ def create_sidebar(
         widgets["x"],
         widgets["y"],
         widgets["clip_pct"],
+        pn.pane.Markdown("## Axis Scale"),
+        widgets["x_scale"],
+        widgets["y_scale"],
         pn.layout.Divider(),
         pn.pane.Markdown("## Plot Size"),
         widgets["width"],

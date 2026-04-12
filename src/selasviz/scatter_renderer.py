@@ -132,6 +132,8 @@ def _build_scatter_common_opts(
     plot_h: int,
     x_col: str,
     y_col: str,
+    x_label: str | None = None,
+    y_label: str | None = None,
 ) -> dict[str, Any]:
     """Build common scatter style options.
 
@@ -161,6 +163,9 @@ def _build_scatter_common_opts(
     dict[str, Any]
         Shared ``opts`` arguments for scatter plots.
     """
+    display_x = x_label or x_col
+    display_y = y_label or y_col
+
     return {
         "size": size,
         "alpha": alpha,
@@ -169,8 +174,8 @@ def _build_scatter_common_opts(
         "line_width": line_width,
         "width": plot_w,
         "height": plot_h,
-        "xlabel": x_col,
-        "ylabel": y_col,
+        "xlabel": display_x,
+        "ylabel": display_y,
         "tools": ["hover"],
         "active_tools": ["wheel_zoom"],
     }
@@ -188,6 +193,8 @@ def _render_plain_scatter(
     line_width: float,
     plot_w: int,
     plot_h: int,
+    x_label: str | None = None,
+    y_label: str | None = None,
 ) -> Any:
     """Render a plain scatter plot without a color column.
 
@@ -222,6 +229,8 @@ def _render_plain_scatter(
         HoloViews object.
     """
     points = hv.Points(df, kdims=[x_col, y_col])
+    display_x = x_label or x_col
+    display_y = y_label or y_col
     common_opts = _build_scatter_common_opts(
         size=size,
         alpha=alpha,
@@ -232,11 +241,13 @@ def _render_plain_scatter(
         plot_h=plot_h,
         x_col=x_col,
         y_col=y_col,
+        x_label=display_x,
+        y_label=display_y,
     )
     return points.opts(
         **common_opts,
         color=color,
-        title=f"{y_col} vs {x_col}",
+        title=f"{display_y} vs {display_x}",
     )
 
 
@@ -255,6 +266,8 @@ def _render_continuous_color_scatter(
     cmap_scatter: str,
     sc_cnorm: str,
     cmap_options: dict[str, list[str] | str],
+    x_label: str | None = None,
+    y_label: str | None = None,
 ) -> Any:
     """Render a scatter plot with continuous color mapping.
 
@@ -295,6 +308,8 @@ def _render_continuous_color_scatter(
         HoloViews object.
     """
     points = hv.Points(df, kdims=[x_col, y_col], vdims=[color_col])
+    display_x = x_label or x_col
+    display_y = y_label or y_col
     common_opts = _build_scatter_common_opts(
         size=size,
         alpha=alpha,
@@ -305,6 +320,8 @@ def _render_continuous_color_scatter(
         plot_h=plot_h,
         x_col=x_col,
         y_col=y_col,
+        x_label=display_x,
+        y_label=display_y,
     )
     return points.opts(
         **common_opts,
@@ -313,7 +330,7 @@ def _render_continuous_color_scatter(
         colorbar_position="right",
         cmap=cmap_options[cmap_scatter],
         cnorm=sc_cnorm,
-        title=f"{y_col} vs {x_col}  [color: {color_col}]",
+        title=f"{display_y} vs {display_x}  [color: {color_col}]",
     )
 
 
@@ -329,6 +346,8 @@ def _render_categorical_color_scatter(
     line_width: float,
     plot_w: int,
     plot_h: int,
+    x_label: str | None = None,
+    y_label: str | None = None,
 ) -> Any:
     """Render a scatter plot with categorical color mapping.
 
@@ -373,6 +392,8 @@ def _render_categorical_color_scatter(
         categorical_series, categories=categories
     )
 
+    display_x = x_label or x_col
+    display_y = y_label or y_col
     common_opts = _build_scatter_common_opts(
         size=size,
         alpha=alpha,
@@ -383,6 +404,8 @@ def _render_categorical_color_scatter(
         plot_h=plot_h,
         x_col=x_col,
         y_col=y_col,
+        x_label=display_x,
+        y_label=display_y,
     )
 
     category_layers: list[hv.Points] = []
@@ -408,11 +431,11 @@ def _render_categorical_color_scatter(
             **common_opts,
             color="#4ECDC4",
             show_legend=False,
-            title=f"{y_col} vs {x_col}  [category: {color_col}]",
+            title=f"{display_y} vs {display_x}  [category: {color_col}]",
         )
 
     return hv.Overlay(category_layers).opts(
-        title=f"{y_col} vs {x_col}  [category: {color_col}]",
+        title=f"{display_y} vs {display_x}  [category: {color_col}]",
         legend_position="right",
     )
 
@@ -433,6 +456,8 @@ def render_scatter(
     cmap_scatter: str,
     sc_cnorm: str,
     cmap_options: dict[str, list[str] | str],
+    x_label: str | None = None,
+    y_label: str | None = None,
 ) -> Any:
     """Render a scatter plot.
 
@@ -487,6 +512,8 @@ def render_scatter(
             line_width=line_width,
             plot_w=plot_w,
             plot_h=plot_h,
+            x_label=x_label,
+            y_label=y_label,
         )
 
     mode = resolve_color_mapping_mode(df[color_col])
@@ -503,6 +530,8 @@ def render_scatter(
             line_width=line_width,
             plot_w=plot_w,
             plot_h=plot_h,
+            x_label=x_label,
+            y_label=y_label,
         )
 
     return _render_continuous_color_scatter(
@@ -520,4 +549,6 @@ def render_scatter(
         cmap_scatter=cmap_scatter,
         sc_cnorm=sc_cnorm,
         cmap_options=cmap_options,
+        x_label=x_label,
+        y_label=y_label,
     )

@@ -5,6 +5,7 @@ import pandas as pd
 
 from selasviz.data import (
     filter_outliers,
+    prepare_plot_dataframe,
     sample_large_data,
     select_color_candidate_columns,
     select_scalar_numeric_columns,
@@ -95,3 +96,48 @@ def test_filter_outliers_clip_percentile_removes_extreme_point() -> None:
 
     assert out["x"].max() < 1000.0
     assert out["y"].max() < 1000.0
+
+
+def test_prepare_plot_dataframe_applies_log10_transform() -> None:
+    df = pd.DataFrame(
+        {
+            "x": [1.0, 10.0, 0.0, -5.0, 100.0],
+            "y": [2.0, 20.0, 30.0, 40.0, 200.0],
+        }
+    )
+
+    out, x_label, y_label = prepare_plot_dataframe(
+        df,
+        "x",
+        "y",
+        x_scale="Log10",
+        y_scale="Linear",
+    )
+
+    assert x_label == "log10(x)"
+    assert y_label == "y"
+    assert out["x"].tolist() == [0.0, 1.0, 2.0]
+    assert out["y"].tolist() == [2.0, 20.0, 200.0]
+
+
+def test_prepare_plot_dataframe_filters_non_positive_values_on_both_axes() -> None:
+    df = pd.DataFrame(
+        {
+            "x": [1.0, 10.0, 100.0, 1000.0],
+            "y": [1.0, 0.0, -1.0, 1000.0],
+        }
+    )
+
+    out, x_label, y_label = prepare_plot_dataframe(
+        df,
+        "x",
+        "y",
+        x_scale="Log10",
+        y_scale="Log10",
+    )
+
+    assert x_label == "log10(x)"
+    assert y_label == "log10(y)"
+    assert len(out) == 2
+    assert out["x"].tolist() == [0.0, 3.0]
+    assert out["y"].tolist() == [0.0, 3.0]

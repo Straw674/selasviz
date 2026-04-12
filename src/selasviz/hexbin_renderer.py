@@ -20,6 +20,8 @@ def render_hexbin(
     plot_w: int,
     plot_h: int,
     cmap_options: dict[str, list[str] | str],
+    x_label: str | None = None,
+    y_label: str | None = None,
 ) -> Any:
     """Render a hexbin plot.
 
@@ -53,6 +55,8 @@ def render_hexbin(
     Any
         HoloViews object.
     """
+    display_x = x_label or x_col
+    display_y = y_label or y_col
     hexbins = hv.HexTiles(df, kdims=[x_col, y_col])
 
     opts_dict: dict[str, Any] = {
@@ -62,9 +66,9 @@ def render_hexbin(
         "cmap": cmap_options[cmap_name],
         "width": plot_w,
         "height": plot_h,
-        "title": f"{y_col} vs {x_col} (hexbin)",
-        "xlabel": x_col,
-        "ylabel": y_col,
+        "title": f"{display_y} vs {display_x} (hexbin)",
+        "xlabel": display_x,
+        "ylabel": display_y,
         "tools": ["hover"],
         "active_tools": ["wheel_zoom"],
     }

@@ -20,6 +20,8 @@ def render_datashader(
     plot_w: int,
     plot_h: int,
     cmap_options: dict[str, list[str] | str],
+    x_label: str | None = None,
+    y_label: str | None = None,
 ) -> Any:
     """Render a Datashader plot.
 
@@ -53,6 +55,8 @@ def render_datashader(
     """
     import datashader as dslib
 
+    display_x = x_label or x_col
+    display_y = y_label or y_col
     points = hv.Points(df, kdims=[x_col, y_col])
     shaded = datashade(
         points,
@@ -67,9 +71,9 @@ def render_datashader(
     return shaded.opts(
         width=plot_w,
         height=plot_h,
-        title=f"{y_col} vs {x_col} (datashaded)",
-        xlabel=x_col,
-        ylabel=y_col,
+        title=f"{display_y} vs {display_x} (datashader)",
+        xlabel=display_x,
+        ylabel=display_y,
         tools=["hover"],
         active_tools=["wheel_zoom"],
     )
